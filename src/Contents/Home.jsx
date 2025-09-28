@@ -13,17 +13,16 @@ const Home = () => {
     const windowWidth = useWindowWidth();
     const currentWidth = ref.current?.getBoundingClientRect().width;
     const widthOverFlow = useMemo(() => windowWidth < currentWidth, [windowWidth, widthChange, currentWidth]);
-    const updatedRows = array.map((item, index) => ({ id: index, ...item }));
-    const [rows, setRows] = useState(updatedRows);
-
+    const [rows, setRows] = useState([]);
+    console.log(rows[0], array[0]);
     const handleFile = async (file) => {
         Papa.parse(file, {
                     header: true,
                     complete: function(results) {
                         const array = results.data;
                         const normalisedArray = array.slice(0, array.length - 1); //remove last empty row
-                        setArray(normalisedArray);
                         localStorage.setItem('array', JSON.stringify(normalisedArray));
+                        setArray(normalisedArray);
                     }
                 });
     }
@@ -31,6 +30,11 @@ const Home = () => {
         file && handleFile(file);
         file && localStorage.setItem('file', file)
     }, [file])
+
+    const updatedRows = array.map((item, index) => ({ id: index, ...item }));
+    useEffect(() => {
+        setRows(updatedRows);
+    }, [array])
 
     const clearData = () => {
         localStorage.clear();
